@@ -171,15 +171,21 @@ pub struct ParticleSpawnerBundle {
     settings: ParticleSpawnerSettings,
     mesh: Handle<Mesh>,
     name: Name,
+    data: ParticleSpawnerData,
+    no_batching: NoAutomaticBatching,
 }
 
 impl ParticleSpawnerBundle {
     pub fn from_settings(settings: ParticleSpawnerSettings) -> Self {
+        let data = ParticleSpawnerData::from(&settings);
+
         Self {
             settings,
             spatial: SpatialBundle::default(),
             mesh: DEFAULT_MESH.clone(),
             name: Name::new("Particle System"),
+            data,
+            no_batching: NoAutomaticBatching,
         }
     }
 }
@@ -209,18 +215,6 @@ impl Default for EffectModifier {
             scale: 1.,
             speed: 1.,
         }
-    }
-}
-
-pub fn create_spawner_data(
-    mut commands: Commands,
-    mut spawners: Query<(Entity, &ParticleSpawnerSettings), Without<ParticleSpawnerData>>,
-) {
-    for (entity, settings) in &mut spawners {
-        commands
-            .entity(entity)
-            .insert(ParticleSpawnerData::from(settings))
-            .insert(NoAutomaticBatching);
     }
 }
 
